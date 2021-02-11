@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf8">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas></canvas>    
+    
+    <script>
+        'use strict';
+
+        let canvas = document.querySelector('canvas');
+        let c = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.style.backgroundColor = 'rgba(255,50,55, 0.2)';
+
+        let w = {
+            innerHeight: window.innerHeight,
+            innerWidth: window.innerWidth
+        }
+
+        window.addEventListener('resize', () => {
+                 createBalls()
+        })
+
+
+        class Balls {
+            constructor(x, y, rad, color, dx, dy) {
+                this.x = x;
+                this.y = y;
+                this.rad = rad;
+                this.color = color;
+                this.dx = dx;
+                this.dy = dy;
+            }
+
+            draw() {
+                c.beginPath();
+                c.arc(this.x, this.y, this.rad, Math.PI * 2, 0, false);
+                c.stroke();
+                c.fillStyle = this.color;
+                c.fill();
+            }
+
+            move() {
+                if (this.y + this.rad + this.dy >= innerHeight) this.dy = -this.dy * 0.9;
+                else this.dy += 1;
+
+                if (this.x + this.rad + this.dx >= innerWidth ||
+                    this.x - this.rad + this.dx <= 0) this.dx = -this.dx;
+                else this.dx *= 0.98;
+
+                this.y += this.dy;
+                this.x += this.dx;
+                this.draw();
+            }
+        }
+
+        let colorsArr = ['#E984AE', '#4E78B9', '#36B88E', '#EFC961', '#F97855'];
+
+        function getRandomIntInclusive(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        let arr;
+
+        function createBalls() {
+            arr = [];
+            for (let i = 0; i < 600; i++) {
+                let rad = Math.random() * 30 + 3;
+                let x = Math.random() * (window.innerWidth - rad);
+                x = (x < rad) ? x + rad : x;
+                let y = Math.random() * (window.innerHeight - rad);
+                y = (y < rad) ? y + rad : y;
+                let color = colorsArr[getRandomIntInclusive(0, 4)];
+                let dx = (Math.random() - 0.5) * 15 + 1
+                let dy = Math.random() * 20 + 1
+                arr.push(new Balls(x, y, rad, color, dx, dy))
+            }
+        }
+        createBalls()
+
+        function go() {
+            c.clearRect(0, 0, innerWidth, innerHeight)
+            requestAnimationFrame(go)
+            arr.forEach(x => x.move())
+        }
+        go()
+
+
+
+
+
+
+    </script>
+
+
+
+</body>
+</html>
